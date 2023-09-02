@@ -43,7 +43,7 @@ jobs:
         run: ./gradlew build
 
       # 上传apk文件作为工作流产物，可以在actions页面下载
-      - name: Upload APK
+      - name: Upload APKS
         uses: actions/upload-artifact@v2
         with:
           name: app-debug.apk
