@@ -1,51 +1,37 @@
-# 这是一个github workflows的yml文件，用于在每次push或pull request时自动编译Android应用
-name: Android CI
 
-# 触发条件，可以根据需要修改
+name: Android Build
+
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
-# 任务列表
 jobs:
   build:
-
-    # 运行环境，使用ubuntu-latest
     runs-on: ubuntu-latest
 
-    # 步骤列表
     steps:
-      # 检出代码
-      - uses: actions/checkout@v2
-      
-      # 设置Java环境，使用jdk11
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # 缓存gradle依赖，提高编译速度
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+    - name: Setup JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: '11'
 
-      # 运行gradle命令，编译应用并生成apk文件
-      - name: Build with Gradle
-        run: ./gradlew build
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        sdk-version: '31.0.0'
+        ndk-version: '23.0.7599858'
 
-      # 上传apk文件作为工作流产物，可以在actions页面下载
-      - name: Upload APKS
-        uses: actions/upload-artifact@v2
-        with:
-          name: app-debug.apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+    - name: Build Android App
+      run: |
+        chmod +x ./gradlew
+        ./gradlew assembleDebug
 
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-debug.apk
+        path: app/build/outputs/apk/debug/app-debug.apk
