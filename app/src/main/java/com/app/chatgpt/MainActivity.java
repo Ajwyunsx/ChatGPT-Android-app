@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
         JSONObject jsonBody = new JSONObject();
         try {
-            jsonBody.put("model","gpt-3.5-turbo");
+            jsonBody.put("model","text-davinci-003");
             jsonBody.put("prompt", question);
             jsonBody.put("max_tokens",4000);
             jsonBody.put("temperature",0);
